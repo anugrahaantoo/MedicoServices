@@ -1,25 +1,35 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 
-const userSchema = mongoose.Schema(
-  {
-    name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    role: {
-      type: String,
-      enum: ['Admin', 'Clerk', 'Doctor', 'Nurse', 'Paramedic'],
-      default: 'Clerk',
-    },
-    department: {
-      type: String,
-      enum: [
-        'Medicine', 'Surgery', 'Orthopedics', 'Pediatrics', 'ENT',
-        'Ophthalmology', 'Gynecology', 'Dermatology', 'Oncology', 'CCU', 'ICU'
-      ],
-      default: null, // Only for Doctors, Nurses, and Paramedics
-    },
+const userSchema = new mongoose.Schema({
+  email: {
+    type: String,
+    required: true,
+    unique: true,
   },
-  { timestamps: true }
-);
+  password: {
+    type: String,
+    required: true,
+  },
+  role: {
+    type: String,
+    required: true,
+    enum: ["Admin", "User"], // example roles
+  },
+});
 
-module.exports = mongoose.model('User', userSchema);
+// Hash the password before saving the user
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+  this.password = await bcrypt.hash(this.password, 10);
+  next();
+});
+
+// Compare input password with hashed password
+userSchema.methods.comparePassword = function (password) {
+  return bcrypt.compare(password, this.password);
+};
+
+const User = mongoose.model("User", userSchema);
+
+module.exports = User;
