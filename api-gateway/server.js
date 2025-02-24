@@ -7,7 +7,7 @@ app.use(express.json());
 
 // Base URLs for each microservice
 const AUTH_SERVICE_URL = 'http://localhost:3001';
-const USER_SERVICE_URL = 'http://localhost:3002';
+const USER_SERVICE_URL = 'http://localhost:5000';
 const ORDER_SERVICE_URL = 'http://localhost:3003';
 const PRODUCT_SERVICE_URL = 'http://localhost:3004';
 const ROLE_SERVICE_URL = 'http://localhost:3005'; // Add Role Service URL
